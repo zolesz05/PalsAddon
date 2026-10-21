@@ -1,0 +1,14 @@
+## Interface: 16001
+## Title: |cff7fd8ffMo|r|cffa88bffteve|r Pals
+## Notes: Funny pop-up news about your friends: level ups, deaths, profession milestones, blue/epic crafts.
+## Notes-huHU: Vicces felugró hírek a haverokról (szintlépés, halál, szakma, craft) + ki hol van a térképen.
+## Author: Zoltán Gosztonyi
+## Version: 0.9.23
+## SavedVariables: MotevePalsDB
+## SavedVariablesPerCharacter: MotevePalsChar
+
+Theme.lua
+Lines.lua
+Pals.lua
+Map.lua
+Options.lua
