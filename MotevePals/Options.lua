@@ -75,9 +75,11 @@ panel.name = "Moteve Pals"
 panel:Hide()
 
 local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+ns.SetFontSafe(title, ns.FONT_BODY_BOLD, 18)
 title:SetPoint("TOPLEFT", 16, -16)
 title:SetText("Moteve Pals")
 local sub = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+ns.SetFontSafe(sub, ns.FONT_BODY, 12)
 sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
 sub:SetText("Vicces hírek a haverokról, és ki hol van a térképen. Parancsok: /mpal")
 
@@ -92,6 +94,7 @@ for _, o in ipairs(OPTIONS) do
         if o.col then col = o.col end
         y = colY[col]
         local h = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        ns.SetFontSafe(h, ns.FONT_BODY_BOLD, 13)
         h:SetPoint("TOPLEFT", COLX[col], y - 6)
         h:SetText(o.head)
         y = y - 26
@@ -106,6 +109,7 @@ for _, o in ipairs(OPTIONS) do
         label:ClearAllPoints()
         label:SetPoint("LEFT", cb, "RIGHT", 4, 0)
         label:SetFontObject("GameFontHighlight")
+        ns.SetFontSafe(label, ns.FONT_BODY, 12)
         label:SetText(o.text)
         cb.opt = o
         cb:SetScript("OnClick", function(self)
@@ -118,12 +122,12 @@ for _, o in ipairs(OPTIONS) do
             end
         end)
         cb:SetScript("OnEnter", function(self)
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:AddLine(self.opt.text, 1, 1, 1)
-            GameTooltip:AddLine(self.opt.tip, 1, 0.82, 0, true)
-            GameTooltip:Show()
+            ns.Tooltip:SetOwner(self, "ANCHOR_RIGHT")
+            ns.Tooltip:AddLine(self.opt.text, 1, 1, 1)
+            ns.Tooltip:AddLine(self.opt.tip, 1, 0.82, 0, true)
+            ns.ShowTooltip()
         end)
-        cb:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        cb:SetScript("OnLeave", function() ns.Tooltip:Hide() end)
         checks[#checks + 1] = cb
         y = y - 26
         colY[col] = y
@@ -133,14 +137,17 @@ end
 -- how long a news stays on screen: - [ 6.5 mp ] +
 y = colY[2]
 local timeLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+ns.SetFontSafe(timeLabel, ns.FONT_BODY, 12)
 timeLabel:SetPoint("TOPLEFT", COLX[2], y - 14)
 timeLabel:SetText("Meddig maradjon kint egy hír")
 local timeValue = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+ns.SetFontSafe(timeValue, ns.FONT_BODY, 12)
 local function TimeBtn(txt, delta, anchorTo, x)
     local b = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     b:SetSize(26, 22)
     b:SetPoint("LEFT", anchorTo, "RIGHT", x, 0)
     b:SetText(txt)
+    ns.SetFontSafe(b:GetFontString(), ns.FONT_BODY, 12)
     b:SetScript("OnClick", function()
         local db = ns.DB(); if not db then return end
         local t = (tonumber(db.time) or 6.5) + delta
@@ -156,6 +163,7 @@ local plus = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 plus:SetSize(26, 22)
 plus:SetPoint("LEFT", timeValue, "RIGHT", 8, 0)
 plus:SetText("+")
+ns.SetFontSafe(plus:GetFontString(), ns.FONT_BODY, 12)
 plus:SetScript("OnClick", function()
     local db = ns.DB(); if not db then return end
     db.time = math.min(30, (tonumber(db.time) or 6.5) + 0.5)
@@ -169,6 +177,7 @@ local function Action(txt, cmd, x, yy)
     b:SetSize(180, 24)
     b:SetPoint("TOPLEFT", x, yy)
     b:SetText(txt)
+    ns.SetFontSafe(b:GetFontString(), ns.FONT_BODY, 12)
     b:SetScript("OnClick", function() if SlashCmdList.MOTEVEPALS then SlashCmdList.MOTEVEPALS(cmd) end end)
     return b
 end

@@ -2,7 +2,7 @@
 
 **Moteve Pals** egy közösségi World of Warcraft addon a WoW Forever klienshez. Vicces, díszes felugró híreket mutat a haverok szintlépéseiről, halálairól, szakma-mérföldköveiről és értékes tárgyairól, valamint megjeleníti az addont használó társakat a világtérképen.
 
-**Aktuális verzió: 0.9.23**
+**Aktuális verzió: 0.9.24**
 
 [Legfrissebb addon letöltése (ZIP)](downloads/MotevePals.zip?raw=true)
 
@@ -59,6 +59,8 @@ Az első indítás üdvözlőablaka segít csatlakozni a közös haveri csatorn�
 Kapcsolatellenőrzéshez `/mpal ping <név>`, részletes állapothoz `/mpal diag` használható. Harc közben a hírek várakozhatnak, és harc után mennek ki. Raidben, battlegroundon és arénában a hírek küldése alapból ki van kapcsolva; a `/mpal raidhir` paranccsal állítható.
 
 ## Térképes helyzetjelzés
+
+A térképes és beállítási tooltipek, valamint a beállítások feliratai magyar ékezeteket (ő/ű) is tartalmazó Barlow betűtípust használnak.
 
 A világtérképen a társakat kis, kasztszínű pontok jelzik. Rámutatáskor név, szint, zóna, elérhető koordináták és a jel állapota látható. A nevek állandó megjelenítése külön kapcsolható.
 

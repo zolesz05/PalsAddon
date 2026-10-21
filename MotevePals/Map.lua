@@ -320,23 +320,23 @@ local function NewPin(parent)
         local p = pals[self.who]
         if not p then return end
         local r, g, b = ClassColor(p.class)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:AddLine(ns.Nick(p.display or self.who), r, g, b)
+        ns.Tooltip:SetOwner(self, "ANCHOR_RIGHT")
+        ns.Tooltip:AddLine(ns.Nick(p.display or self.who), r, g, b)
         local cls = p.class and LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE[p.class] or p.class or ""
-        GameTooltip:AddLine(format("%s. szintű %s", tostring(p.level or "?"), cls), 0.92, 0.88, 0.80)
+        ns.Tooltip:AddLine(format("%s. szintű %s", tostring(p.level or "?"), cls), 0.92, 0.88, 0.80)
         local where = (p.zone and p.zone ~= "") and p.zone or "ismeretlen vidék"
         if p.x and p.x > 0 then where = format("%s  |cff8c8070%.1f, %.1f|r", where, p.x * 100, p.y * 100) end
-        GameTooltip:AddLine(where, 1, 0.82, 0.45)
+        ns.Tooltip:AddLine(where, 1, 0.82, 0.45)
         local lt, lr, lg, lb = LayerText(p.layer, ns.MyLayer())
-        GameTooltip:AddLine("Layer: " .. lt, lr, lg, lb)
-        if p.dead then GameTooltip:AddLine("Elesett - szellemként bolyong", 1, 0.40, 0.35) end
+        ns.Tooltip:AddLine("Layer: " .. lt, lr, lg, lb)
+        if p.dead then ns.Tooltip:AddLine("Elesett - szellemként bolyong", 1, 0.40, 0.35) end
         local age = Now() - (p.t or 0)
         local txt, sr, sg, sb = Signal(age)
-        GameTooltip:AddLine(" ")
-        GameTooltip:AddLine(Dot(sr, sg, sb) .. " " .. txt .. "  |cff8c8c8c-  " .. Ago(age) .. "|r", sr, sg, sb)
-        GameTooltip:Show()
+        ns.Tooltip:AddLine(" ")
+        ns.Tooltip:AddLine(Dot(sr, sg, sb) .. " " .. txt .. "  |cff8c8c8c-  " .. Ago(age) .. "|r", sr, sg, sb)
+        ns.ShowTooltip()
     end)
-    f:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    f:SetScript("OnLeave", function() ns.Tooltip:Hide() end)
     return f
 end
 

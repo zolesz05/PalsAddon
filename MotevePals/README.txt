@@ -123,3 +123,5 @@ TUDNIVALÓK
 0.9.21: MORE WEED! (Beállítások > Grafika vagy /mpal weed): groundEffectDensity 256, groundEffectFade 370, groundEffectDist 500; kikapcsolva alapérték.
 0.9.22: "Jó fények" kapcsoló (Beállítások > Grafika vagy /mpal feny): Contrast 80, Brightness 49, Gamma 1.2; kikapcsolva alapérték.
 0.9.23: a beállítások oldal két oszlopos, nem lóg ki a gombok alá.
+
+0.9.24: magyar ő/ű javítása a térképes és beállítási tooltipekben, valamint a beállítások feliratain; saját Barlow betűtípus, a játék többi tooltipjének módosítása nélkül.

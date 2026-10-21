@@ -81,6 +81,19 @@ local function SetFontSafe(fs, path, size)
 end
 ns.SetFontSafe = SetFontSafe
 
+-- Keep Hungarian glyphs local to our tooltips; never change shared game fonts.
+ns.Tooltip = CreateFrame("GameTooltip", "MotevePalsTooltip", UIParent, "GameTooltipTemplate")
+ns.Tooltip:Hide()
+function ns.ShowTooltip()
+    for i = 1, ns.Tooltip:NumLines() do
+        for _, side in ipairs({ "Left", "Right" }) do
+            local fs = _G["MotevePalsTooltipText" .. side .. i]
+            if fs then SetFontSafe(fs, i == 1 and ns.FONT_BODY_BOLD or ns.FONT_BODY, i == 1 and 14 or 13) end
+        end
+    end
+    ns.Tooltip:Show()
+end
+
 function ns.Font(parent, kind, size, c, justify, layer)
     local fs = parent:CreateFontString(nil, layer or "OVERLAY")
     local path = (kind == "label" and ns.FONT_LABEL) or (kind == "title" and ns.FONT_TITLE)
