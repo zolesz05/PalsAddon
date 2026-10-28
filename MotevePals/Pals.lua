@@ -12,7 +12,7 @@ local PREFIX = "MOTEVEPAL"
 local DEFAULTS = {
     enabled = true, mapNames = false, quietRaidPvp = true, selfToast = false, chat = true, sound = true, time = 6.5, share = true, map = true,
     guild = true, group = true, friends = true, crew = nil,
-    point = "TOP", relPoint = "TOP", x = 0, y = -120,
+    point = "TOP", relPoint = "TOP", x = 0, y = -120, scale = 1,
 }
 local db, char
 
@@ -239,6 +239,61 @@ T.close:SetScript("OnClick", function() Dismiss(IsShiftKeyDown and IsShiftKeyDow
 T:SetScript("OnMouseUp", function(self, btn)
     if self.moving then return end
     Dismiss(btn == "RightButton")
+end)
+
+-- size (move mode only): the whole banner is scaled, the layout above stays built for TW.
+-- Grip in the corner or mouse wheel; the top-left corner stays where it is. Right click on the grip = 1.0
+local function ClampScale(s) return math.min(2, math.max(0.5, tonumber(s) or 1)) end
+local function SetToastScale(s)
+    s = ClampScale(s)
+    local l, t = T:GetLeft(), T:GetTop()
+    local eff = T:GetEffectiveScale()
+    T:SetScale(s)
+    if l and t then
+        local ne = T:GetEffectiveScale()
+        T:ClearAllPoints()
+        T:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", l * eff / ne, t * eff / ne)
+        -- clamped to the screen: keep where it is really drawn, so the saved place does not drift
+        local cl, ct = T:GetLeft(), T:GetTop()
+        if cl and ct then T:ClearAllPoints(); T:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", cl, ct) end
+    end
+    local p, _, rp, x, y = T:GetPoint()
+    db.scale, db.point, db.relPoint, db.x, db.y = s, p, rp, x, y
+end
+T.grip = CreateFrame("Button", nil, T)
+T.grip:SetSize(16, 16)
+T.grip:SetPoint("BOTTOMRIGHT", T, "BOTTOMRIGHT", -TW * 0.03, 6)
+T.grip.tex = T.grip:CreateTexture(nil, "OVERLAY")
+T.grip.tex:SetAllPoints()
+local okTex, found = pcall(T.grip.tex.SetTexture, T.grip.tex, "Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+if not (okTex and found) then   -- no size-grabber art on this client: a plain drawn corner
+    T.grip.tex:Hide()
+    for _, side in ipairs({ { 16, 3 }, { 3, 16 } }) do
+        local bar = T.grip:CreateTexture(nil, "OVERLAY")
+        bar:SetColorTexture(0.85, 0.75, 0.6, 0.9)
+        bar:SetSize(side[1], side[2])
+        bar:SetPoint("BOTTOMRIGHT")
+    end
+end
+T.grip:Hide()
+T.grip:EnableMouse(false)
+local function StopGrip() T.grip:SetScript("OnUpdate", nil) end
+T.grip:SetScript("OnMouseDown", function(self, btn)
+    if btn ~= "LeftButton" or not GetCursorPosition or not T:GetLeft() then return end
+    local leftPx = T:GetLeft() * T:GetEffectiveScale()
+    local dx0, s0 = GetCursorPosition() - leftPx, T:GetScale()
+    if dx0 <= 0 then return end
+    self:SetScript("OnUpdate", function()
+        SetToastScale(s0 * (GetCursorPosition() - leftPx) / dx0)
+    end)
+end)
+T.grip:SetScript("OnMouseUp", function(_, btn)
+    StopGrip()
+    if btn == "RightButton" then SetToastScale(1) end
+end)
+T.grip:SetScript("OnHide", StopGrip)
+pcall(T.SetScript, T, "OnMouseWheel", function(self, delta)
+    if self.moving then SetToastScale(math.floor((self:GetScale() + delta * 0.05) * 20 + 0.5) / 20) end
 end)
 local glowC = { 1, 1, 1 }
 
@@ -780,6 +835,8 @@ ev:SetScript("OnEvent", function(_, e, a1, a2, a3, a4)
         MotevePalsChar = MotevePalsChar or {}
         for k, v in pairs(DEFAULTS) do if MotevePalsDB[k] == nil then MotevePalsDB[k] = v end end
         db, char = MotevePalsDB, MotevePalsChar
+        db.scale = ClampScale(db.scale)
+        T:SetScale(db.scale)
         T:ClearAllPoints()
         T:SetPoint(db.point, UIParent, db.relPoint, db.x, db.y)
         if C_ChatInfo and C_ChatInfo.RegisterAddonMessagePrefix then C_ChatInfo.RegisterAddonMessagePrefix(PREFIX)
@@ -876,9 +933,13 @@ SlashCmdList.MOTEVEPALS = function(input)
             T.bg:SetTexture(ns.TEX("toast_levelup")); T.bg:SetTexCoord(0, 1, 0, STYLE.levelup.v)
             T:SetHeight(math.floor(TW * STYLE.levelup.v / 4 + 0.5))
             T.title:SetText("MOTEVE PALS"); T.title:SetTextColor(1, 0.78, 0.25)
-            T.text:SetText("Húzd a helyére, majd /mpal move"); T.med:SetText("")
+            T.text:SetText("Húzd a helyére, a sarkánál méretezd, majd /mpal move"); T.med:SetText("")
             T:SetAlpha(1); T:Show()
+            T.grip:Show(); T.grip:EnableMouse(true)
+            pcall(T.EnableMouseWheel, T, true)
         else
+            T.grip:Hide(); T.grip:EnableMouse(false)
+            pcall(T.EnableMouseWheel, T, false)
             T:Hide(); showing = false
         end
     elseif cmd == "time" or cmd == "ido" or cmd == "idő" then
@@ -888,6 +949,7 @@ SlashCmdList.MOTEVEPALS = function(input)
     elseif cmd == "raidhir" or cmd == "raid" then
         db.quietRaidPvp = not db.quietRaidPvp
         Print("raidben / BG-n / arénában: " .. (db.quietRaidPvp and "nem küld hírt" or "ott is küld hírt"))
+    -- intentionally undocumented (no button, not in the help): only for testing on purpose
     elseif cmd == "kuld" or cmd == "küld" or cmd == "sendtest" then
         -- a test news to the others (they see a level up from you)
         Announce("levelup", { level = UnitLevel("player") or 1 })
@@ -949,7 +1011,7 @@ SlashCmdList.MOTEVEPALS = function(input)
             OnOff(db.sound)))
         print("   /mpal test            minta-hírek")
         print("   /mpal crew <név>      közös rejtett csatorna a haveroknak (mind ugyanazt írjátok be)")
-        print("   /mpal move            a felugró ablak mozgatása")
+        print("   /mpal move            a felugró ablak mozgatása, a sarkánál / görgővel méretezés")
         print("   /mpal time <mp>       meddig maradjon kint (most: " .. (db.time or 6.5) .. " mp)")
         print("   bezárás: X a sarokban / bal klikk = ez,  jobb klikk = ez + a sorban állók")
         print("   /mpal legend <class> <név> <cím>   class-legenda halálhírekhez")
@@ -958,7 +1020,6 @@ SlashCmdList.MOTEVEPALS = function(input)
         print("   /mpal weed            MORE WEED! ki/be (sűrűbb fű)")
         print("   /mpal feny            Jó fények ki/be (kontraszt 80, fényerő 49, gamma 1.2)")
         print("   /mpal opciok          beállítások (Beállítások > Kiegészítők > Moteve Pals)")
-        print("   /mpal kuld            teszt-hír a haveroknak (náluk ugrik fel)")
         print("   /mpal ping [név]      kapcsolat-teszt (név nélkül minden csatornán)  ·  /mpal debug")
         print("   /mpal map | share     haverok a térképen ki/be  ·  a saját helyed megosztása ki/be")
         print("   /mpal nevek           nevek kiírva a térképen (alap: ki, csak egér rá)")

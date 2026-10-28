@@ -182,12 +182,11 @@ local function Action(txt, cmd, x, yy)
     return b
 end
 Action("Minta-hírek (nálam)", "test", 16, y)
-Action("Teszt-hír a haveroknak", "kuld", 206, y)
-Action("Felugró ablak mozgatása", "move", 396, y)
+Action("Felugró ablak mozgatása", "move", 206, y)
+Action("Kapcsolat-teszt (ping)", "ping", 396, y)
 y = y - 28
-Action("Kapcsolat-teszt (ping)", "ping", 16, y)
-Action("Ki hol van (chatbe)", "hol", 206, y)
-Action("Diagnosztika (chatbe)", "diag", 396, y)
+Action("Ki hol van (chatbe)", "hol", 16, y)
+Action("Diagnosztika (chatbe)", "diag", 206, y)
 
 local function Refresh()
     local db = ns.DB()

@@ -1,4 +1,4 @@
-Moteve Pals 0.9.25 - WoW Forever (Interface 16001)
+Moteve Pals 0.9.26 - WoW Forever (Interface 16001)
 Vicces felugró hírek a haverokról. Mindenkinek fel kell raknia, aki látni / küldeni akar.
 
 TELEPÍTÉS
@@ -39,7 +39,7 @@ PARANCSOK (/mpal)
   /mpal                 állapot és súgó
   /mpal test            minta-hírek
   /mpal crew <név>      közös csatorna a haveroknak  (/mpal crew  üresen = kilépés)
-  /mpal move            a felugró ablak mozgatása (újra /mpal move = kész)
+  /mpal move            a felugró ablak mozgatása, a sarkánál (vagy görgővel) méretezés (újra /mpal move = kész)
   /mpal legend <class> <név> <cím>   class-legenda beállítása halálhírekhez
   /mpal sound           hang ki / be
   /mpal chat            a hírek a chatbe is ki / be
@@ -126,3 +126,6 @@ TUDNIVALÓK
 
 0.9.24: magyar ő/ű javítása a térképes és beállítási tooltipekben, valamint a beállítások feliratain; saját Barlow betűtípus, a játék többi tooltipjének módosítása nélkül.
 0.9.25: guildbe lépés után azonnal átáll a guildre (/reload nélkül): rejtett hello és hely-küldés a guildnek, és egy helyi üzenet a chatben.
+0.9.26: a felugró ablak mozgatáskor át is méretezhető: jobb alsó sarkánál húzva vagy egérgörgővel arányosan (0,5-2x),
+        jobb klikk a sarokra = eredeti méret; a méret a hellyel együtt mentődik. A beállításokból kikerült a haveroknak
+        teszt-hírt küldő gomb, a gombok rendezve.
