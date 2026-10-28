@@ -208,10 +208,13 @@ T.text:SetPoint("TOPLEFT", T.title, "BOTTOMLEFT", 0, -1)
 T:EnableMouse(false)
 T:RegisterForDrag("LeftButton")
 T:SetScript("OnDragStart", function(self) if self.moving then self:StartMoving() end end)
+local function SavePos()
+    local p, _, rp, x, y = T:GetPoint()
+    db.point, db.relPoint, db.x, db.y = p, rp, x, y
+end
 T:SetScript("OnDragStop", function(self)
     self:StopMovingOrSizing()
-    local p, _, rp, x, y = self:GetPoint()
-    db.point, db.relPoint, db.x, db.y = p, rp, x, y
+    SavePos()
 end)
 
 local queue, showing, t0 = {}, false, 0
@@ -881,6 +884,28 @@ end)
 -- Slash
 ---------------------------------------------------------------------------
 local function OnOff(v) return v and "be" or "ki" end
+
+-- move mode on / off (/mpal move, and off when the options panel is hidden)
+function ns.SetMoveMode(on)
+    if not on and not T.moving then return end   -- already off: leave a showing news toast alone
+    T:EnableMouse(on); T.moving = on; T.close:SetAlpha(0)
+    if on then
+        queue = {}
+        T.bg:SetTexture(ns.TEX("toast_levelup")); T.bg:SetTexCoord(0, 1, 0, STYLE.levelup.v)
+        T:SetHeight(math.floor(TW * STYLE.levelup.v / 4 + 0.5))
+        T.title:SetText("MOTEVE PALS"); T.title:SetTextColor(1, 0.78, 0.25)
+        T.text:SetText("Húzd a helyére, a sarkánál méretezd, majd /mpal move"); T.med:SetText("")
+        T:SetAlpha(1); T:Show()
+        T.grip:Show(); T.grip:EnableMouse(true)
+        pcall(T.EnableMouseWheel, T, true)
+    else
+        T:StopMovingOrSizing(); SavePos()   -- a drag cut short by hiding gets no OnDragStop
+        T.grip:Hide(); T.grip:EnableMouse(false)
+        pcall(T.EnableMouseWheel, T, false)
+        T:Hide(); showing = false
+    end
+end
+
 SLASH_MOTEVEPALS1, SLASH_MOTEVEPALS2 = "/mpal", "/pals"
 SlashCmdList.MOTEVEPALS = function(input)
     local cmd, arg = (input or ""):match("^(%S*)%s*(.-)%s*$")
@@ -926,22 +951,7 @@ SlashCmdList.MOTEVEPALS = function(input)
             for c, lg in pairs(db.legends) do print(format("   %s: %s, %s (saját)", c, lg.name, lg.title)) end
         end
     elseif cmd == "move" then
-        local on = not T.moving
-        T:EnableMouse(on); T.moving = on; T.close:SetAlpha(0)
-        if on then
-            queue = {}
-            T.bg:SetTexture(ns.TEX("toast_levelup")); T.bg:SetTexCoord(0, 1, 0, STYLE.levelup.v)
-            T:SetHeight(math.floor(TW * STYLE.levelup.v / 4 + 0.5))
-            T.title:SetText("MOTEVE PALS"); T.title:SetTextColor(1, 0.78, 0.25)
-            T.text:SetText("Húzd a helyére, a sarkánál méretezd, majd /mpal move"); T.med:SetText("")
-            T:SetAlpha(1); T:Show()
-            T.grip:Show(); T.grip:EnableMouse(true)
-            pcall(T.EnableMouseWheel, T, true)
-        else
-            T.grip:Hide(); T.grip:EnableMouse(false)
-            pcall(T.EnableMouseWheel, T, false)
-            T:Hide(); showing = false
-        end
+        ns.SetMoveMode(not T.moving)
     elseif cmd == "time" or cmd == "ido" or cmd == "idő" then
         local n = tonumber(arg)
         if n and n >= 1 and n <= 60 then db.time = n end
