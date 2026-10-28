@@ -195,6 +195,7 @@ local function Refresh()
     timeValue:SetText(format("%.1f mp", tonumber(db.time) or 6.5))
 end
 panel:SetScript("OnShow", Refresh)
+panel:SetScript("OnHide", function() if ns.SetMoveMode then ns.SetMoveMode(false) end end)   -- closing the settings ends move mode
 panel.refresh = Refresh   -- old options panel API
 
 -- register in Options > AddOns (new Settings API, or the old Interface Options)
