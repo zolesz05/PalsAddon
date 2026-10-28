@@ -442,19 +442,73 @@ do
     end)
 end
 
+-- joining a guild mid-session: hidden hello + position over GUILD right away (no /reload needed).
+-- known: the login baseline is taken (events before it are ignored, so login / reload is never a join)
+-- armed: a PLAYER_GUILD_UPDATE came since then (a guild that only finished loading is not a join)
+-- pending: a re-check is scheduled (IsInGuild() can stay false for a moment after accepting)
+local guildJoin = { known = false, inGuild = false, pending = false, armed = false }
+
+local function OnGuildJoined()
+    local db = ns.DB()
+    if not db or not db.enabled then return end
+    if not db.guild then
+        ns.Print("beléptél egy guildbe, de a guildnek küldés ki van kapcsolva. Bekapcsolás: /mpal guild")
+        return
+    end
+    ns.Print("beléptél egy guildbe: a hírek és a helyed mostantól a guilden át is mennek.")
+    if db.share then
+        ns.RawSend("H~" .. ns.TOKEN .. "~" .. (ns.MyName and ns.MyName() or ""), "GUILD")
+        SendPosition(true)
+    end
+end
+
+local function RequestGuildRoster()
+    if C_GuildInfo and C_GuildInfo.GuildRoster then pcall(C_GuildInfo.GuildRoster)
+    elseif GuildRoster then pcall(GuildRoster) end
+end
+
+local function CheckGuild(e)
+    if not guildJoin.known then return end
+    if e == "PLAYER_GUILD_UPDATE" then guildJoin.armed = true end
+    if IsInGuild() then
+        if not guildJoin.inGuild and guildJoin.armed then
+            guildJoin.inGuild, guildJoin.armed = true, false
+            OnGuildJoined()
+        end
+    elseif e == "PLAYER_GUILD_UPDATE" then
+        -- maybe not up to date yet: ask for the roster and look again once
+        RequestGuildRoster()
+        if not guildJoin.pending then
+            guildJoin.pending = true
+            C_Timer.After(2, function()
+                guildJoin.pending = false
+                pcall(CheckGuild, "RECHECK")
+            end)
+        end
+    else
+        guildJoin.inGuild = false   -- confirmed out: a later join reacts again (nothing printed)
+    end
+end
+
 for _, e in ipairs({ "PLAYER_LOGIN", "ZONE_CHANGED_NEW_AREA", "PLAYER_DEAD", "PLAYER_UNGHOST", "PLAYER_ALIVE",
-                     "FRIENDLIST_UPDATE" }) do
+                     "FRIENDLIST_UPDATE", "PLAYER_GUILD_UPDATE", "GUILD_ROSTER_UPDATE" }) do
     pcall(ev.RegisterEvent, ev, e)
 end
 ev:SetScript("OnEvent", function(_, e)
     if e == "PLAYER_LOGIN" then
         if C_FriendList and C_FriendList.ShowFriends then pcall(C_FriendList.ShowFriends) end
-        C_Timer.After(8, function() pcall(Hello); pcall(HelloKnown); pcall(SendPosition, true) end)
+        C_Timer.After(8, function()
+            guildJoin.inGuild = IsInGuild() and true or false
+            guildJoin.known, guildJoin.armed = true, false
+            pcall(Hello); pcall(HelloKnown); pcall(SendPosition, true)
+        end)
         C_Timer.NewTicker(60, function() pcall(HelloKnown) end)
         C_Timer.NewTicker(SEND_EVERY, function() pcall(SendPosition) end)
     elseif e == "FRIENDLIST_UPDATE" then
         -- a friend came online: ask them too (only once per session)
         C_Timer.After(2, function() pcall(Hello) end)
+    elseif e == "PLAYER_GUILD_UPDATE" or e == "GUILD_ROSTER_UPDATE" then
+        pcall(CheckGuild, e)
     else
         C_Timer.After(1, function() pcall(SendPosition, true) end)
     end

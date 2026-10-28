@@ -1,4 +1,4 @@
-Moteve Pals 0.9.23 - WoW Forever (Interface 16001)
+Moteve Pals 0.9.25 - WoW Forever (Interface 16001)
 Vicces felugró hírek a haverokról. Mindenkinek fel kell raknia, aki látni / küldeni akar.
 
 TELEPÍTÉS
@@ -125,3 +125,4 @@ TUDNIVALÓK
 0.9.23: a beállítások oldal két oszlopos, nem lóg ki a gombok alá.
 
 0.9.24: magyar ő/ű javítása a térképes és beállítási tooltipekben, valamint a beállítások feliratain; saját Barlow betűtípus, a játék többi tooltipjének módosítása nélkül.
+0.9.25: guildbe lépés után azonnal átáll a guildre (/reload nélkül): rejtett hello és hely-küldés a guildnek, és egy helyi üzenet a chatben.
