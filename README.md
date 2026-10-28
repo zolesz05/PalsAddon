@@ -2,7 +2,7 @@
 
 **Moteve Pals** egy közösségi World of Warcraft addon a WoW Forever klienshez. Vicces, díszes felugró híreket mutat a haverok szintlépéseiről, halálairól, szakma-mérföldköveiről és értékes tárgyairól, valamint megjeleníti az addont használó társakat a világtérképen.
 
-**Aktuális verzió: 0.9.25**
+**Aktuális verzió: 0.9.26**
 
 [Legfrissebb addon letöltése (ZIP)](downloads/MotevePals.zip?raw=true)
 
@@ -46,7 +46,7 @@ Az értesítések díszes fantasy keretet, hírtípusonként saját hátteret, b
 
 - A felugró hír az **X** gombbal bezárható.
 - Jobb kattintás vagy Shift + X a sorban várakozó híreket is eldobja.
-- A `/mpal move` paranccsal mozgatható; újra kiadva befejezhető a mozgatás.
+- A `/mpal move` paranccsal mozgatható, és közben a jobb alsó sarkánál fogva vagy egérgörgővel arányosan átméretezhető (0,5–2×; jobb kattintás a sarokra = eredeti méret); újra kiadva befejezhető a mozgatás. A méret és a hely mentődik.
 - A láthatósági idő **1–60 másodperc** között állítható, például `/mpal time 8`.
 - A játék saját hangeffektjei, a chatbe kiírás és a saját hírek megjelenítése külön kapcsolhatók.
 
@@ -79,8 +79,7 @@ A beállítópanel a **Beállítások → Kiegészítők → Moteve Pals** oldal
 | `/mpal` | Állapot és súgó |
 | `/mpal opciok` | Beállítások |
 | `/mpal test` | Helyi mintahírek |
-| `/mpal kuld` | Teszthír küldése a társaknak |
-| `/mpal move` | Felugró ablak mozgatása |
+| `/mpal move` | Felugró ablak mozgatása és méretezése (sarok / görgő) |
 | `/mpal time 8` | Megjelenítési idő: 8 másodperc |
 | `/mpal sound` | Hang kapcsolása |
 | `/mpal chat` | Chatbe kiírás kapcsolása |
@@ -108,7 +107,7 @@ A `/mpal weed` a sűrűbb, távolabb látszó növényzetet kapcsolja (`groundEf
 
 A célkliens **WoW Forever**, a TOC Interface-értéke **16001**. A mentések neve `MotevePalsDB` és karakterenként `MotevePalsChar`.
 
-A csomag a jelenleg telepített **0.9.23-as verzió** változatlan másolata. Feltöltés előtt a fájlok azonosságát, a Lua-szintaxist és a ZIP tartalmát ellenőriztük. Az élő játékbeli működést és a játékosok közötti üzenetküldést a feltöltéskor nem teszteltük újra. A kliens és a szerver korlátozásai befolyásolhatják az üzenetek és helyzetadatok kézbesítését.
+A csomag a fenti aktuális verzió forrásából készül. Feltöltés előtt a fájlok azonosságát, a Lua-szintaxist és a ZIP tartalmát ellenőriztük. Az élő játékbeli működést és a játékosok közötti üzenetküldést a feltöltéskor nem teszteltük újra. A kliens és a szerver korlátozásai befolyásolhatják az üzenetek és helyzetadatok kézbesítését.
 
 ## Hibajelentés és források
 
