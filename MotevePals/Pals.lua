@@ -198,6 +198,7 @@ ns.SetFontSafe(T.title, MORPHEUS, 19)
 T.title:SetShadowColor(0, 0, 0, 1); T.title:SetShadowOffset(1, -1)
 T.title:SetPoint("TOPLEFT", T.kicker, "BOTTOMLEFT", 0, -1)
 T.text = T:CreateFontString(nil, "OVERLAY")
+ns.SetFontSafe(T.text, ns.FONT_TITLE, 12)
 T.text:SetTextColor(0.96, 0.93, 0.86)
 T.text:SetShadowColor(0, 0, 0, 1); T.text:SetShadowOffset(1, -1)
 T.text:SetJustifyH("LEFT"); T.text:SetJustifyV("TOP")
@@ -305,6 +306,14 @@ local function Place(dy)
     T:SetPoint(db.point, UIParent, db.relPoint, db.x, db.y + (dy or 0))
 end
 
+-- body text: starts at 12 and steps down so a long line still fits the banner
+local function SetBodyText(text)
+    ns.SetFontSafe(T.text, ns.FONT_TITLE, 12)
+    T.text:SetText(text)
+    if (T.text:GetStringHeight() or 0) > 30 then ns.SetFontSafe(T.text, ns.FONT_TITLE, 10.5) end
+    if (T.text:GetStringHeight() or 0) > 40 then ns.SetFontSafe(T.text, ns.FONT_TITLE, 9.5) end
+end
+
 local function Next()
     local item = table.remove(queue, 1)
     if not item then showing = false; T:EnableMouse(false); T:Hide(); return end
@@ -319,10 +328,7 @@ local function Next()
     local c = st.c
     T.title:SetText(ns.TITLES[item.kind] or "")
     T.title:SetTextColor(c[1], c[2], c[3])
-    ns.SetFontSafe(T.text, ns.FONT_TITLE, 12)
-    T.text:SetText(item.text)
-    if (T.text:GetStringHeight() or 0) > 30 then ns.SetFontSafe(T.text, ns.FONT_TITLE, 10.5) end
-    if (T.text:GetStringHeight() or 0) > 40 then ns.SetFontSafe(T.text, ns.FONT_TITLE, 9.5) end
+    SetBodyText(item.text)
     local med = st.med:gsub("%%l", tostring(f.level or "")):gsub("%%r", tostring(f.rank or ""))
     T.med:ClearAllPoints()
     if st.gem then   -- the gem sits in the upper half of the medallion, the word below it
@@ -888,17 +894,20 @@ local function OnOff(v) return v and "be" or "ki" end
 -- move mode on / off (/mpal move, and off when the options panel is hidden)
 function ns.SetMoveMode(on)
     if not on and not T.moving then return end   -- already off: leave a showing news toast alone
-    T:EnableMouse(on); T.moving = on; T.close:SetAlpha(0)
+    T.close:SetAlpha(0)
     if on then
         queue = {}
         T.bg:SetTexture(ns.TEX("toast_levelup")); T.bg:SetTexCoord(0, 1, 0, STYLE.levelup.v)
         T:SetHeight(math.floor(TW * STYLE.levelup.v / 4 + 0.5))
         T.title:SetText("MOTEVE PALS"); T.title:SetTextColor(1, 0.78, 0.25)
-        T.text:SetText("Húzd a helyére, a sarkánál méretezd, majd /mpal move"); T.med:SetText("")
+        SetBodyText("Húzd a helyére, a sarkánál méretezd, majd /mpal move"); T.med:SetText("")
         T:SetAlpha(1); T:Show()
         T.grip:Show(); T.grip:EnableMouse(true)
         pcall(T.EnableMouseWheel, T, true)
+        -- only once the toast is up, so a failed open never leaves the toggle stuck on
+        T:EnableMouse(true); T.moving = true
     else
+        T:EnableMouse(false); T.moving = false
         T:StopMovingOrSizing(); SavePos()   -- a drag cut short by hiding gets no OnDragStop
         T.grip:Hide(); T.grip:EnableMouse(false)
         pcall(T.EnableMouseWheel, T, false)

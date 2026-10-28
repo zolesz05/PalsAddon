@@ -1,4 +1,4 @@
-Moteve Pals 0.9.27 - WoW Forever (Interface 16001)
+Moteve Pals 0.9.28 - WoW Forever (Interface 16001)
 Vicces felugró hírek a haverokról. Mindenkinek fel kell raknia, aki látni / küldeni akar.
 
 TELEPÍTÉS
@@ -130,3 +130,4 @@ TUDNIVALÓK
         jobb klikk a sarokra = eredeti méret; a méret a hellyel együtt mentődik. A beállításokból kikerült a haveroknak
         teszt-hírt küldő gomb, a gombok rendezve.
 0.9.27: a beállítások bezárásakor (vagy másik oldalra váltáskor) a felugró ablak mozgatása is befejeződik; a hely és a méret megmarad.
+0.9.28: belépés után a „Felugró ablak mozgatása” (és a /mpal move) már az első kattintásra megmutatja a felugró ablakot, hiba nélkül.
